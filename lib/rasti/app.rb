@@ -93,7 +93,7 @@ module Rasti
                   alias:       interaction,
                   interaction: interaction,
                   context:     context,
-                  params:      interaction.build_form(params).assigned_attributes
+                  params:      interaction.build_form(params).attributes
     end
 
     def authorize!(permission, params)
