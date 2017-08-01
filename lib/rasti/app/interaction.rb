@@ -12,12 +12,23 @@ module Rasti
       end
 
       def call(params)
-        execute self.class.build_form(params)
+        Thread.current[thread_form_key] = self.class.build_form(params)
+        execute
+      ensure
+        Thread.current[thread_form_key] = nil
       end
 
       private
 
       attr_reader :container, :context
+
+      def form
+        Thread.current[thread_form_key]
+      end
+
+      def thread_form_key
+        "#{self.class.name}::Form[#{self.object_id}]"
+      end
 
     end
   end
