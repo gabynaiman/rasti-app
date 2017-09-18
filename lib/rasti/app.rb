@@ -73,12 +73,8 @@ module Rasti
 
     attr_reader :container, :context
 
-    def user
-      context.fetch(:user)
-    end
-
     def policy
-      @policy ||= (container[:policy_class] || Policy).new container, user
+      @policy ||= (container[:policy_class] || Policy).new container, context
     end
 
     def call(interaction, permission, params)

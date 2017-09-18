@@ -26,9 +26,9 @@ module Rasti
 
       end
 
-      def initialize(container, user)
+      def initialize(container, context)
         @container = container
-        @user = user
+        @context = context
       end
 
       def authorized?(permission, params)
@@ -45,7 +45,11 @@ module Rasti
 
       private 
 
-      attr_reader :container, :user
+      attr_reader :container, :context
+
+      def user
+        context.fetch(:user)
+      end
 
     end
   end
