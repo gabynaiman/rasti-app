@@ -2,6 +2,8 @@ module Rasti
   class App
     class Interaction
 
+      include Rasti::Form::Validable
+
       def self.build_form(params)
         constants.include?(:Form) ? const_get(:Form).new(params) : Form.new
       end
@@ -13,6 +15,7 @@ module Rasti
 
       def call(params)
         Thread.current[thread_form_key] = self.class.build_form(params)
+        validate!
         execute
       ensure
         Thread.current[thread_form_key] = nil

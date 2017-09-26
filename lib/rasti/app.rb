@@ -5,7 +5,7 @@ require 'asynchronic'
 require 'hash_ext'
 require 'consty'
 require 'multi_require'
-
+require 'rasti-form'
 
 module Rasti
   class App
