@@ -14,11 +14,11 @@ module Rasti
       end
 
       def call(params)
-        Thread.current[thread_form_key] = self.class.build_form(params)
+        thread_cache[:form] = self.class.build_form(params)
         validate!
         execute
       ensure
-        Thread.current[thread_form_key] = nil
+        thread_cache[:form] = nil
       end
 
       private
@@ -26,11 +26,15 @@ module Rasti
       attr_reader :container, :context
 
       def form
-        Thread.current[thread_form_key]
+        thread_cache[:form]
       end
 
-      def thread_form_key
-        "#{self.class.name}::Form[#{self.object_id}]"
+      def thread_cache
+        Thread.current[thread_cache_key] ||= {}
+      end
+
+      def thread_cache_key
+        "#{self.class.name}[#{self.object_id}]"
       end
 
     end
