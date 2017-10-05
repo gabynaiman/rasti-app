@@ -8,6 +8,10 @@ module Rasti
         constants.include?(:Form) ? const_get(:Form).new(params) : Form.new
       end
 
+      def self.asynchronic?
+        false
+      end      
+
       def initialize(container, context)
         @container = container
         @context = context

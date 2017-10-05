@@ -2,6 +2,10 @@ module Rasti
   class App
     class AsynchronicInteraction < Interaction
 
+      def self.asynchronic?
+        true
+      end      
+
       private
 
       def job

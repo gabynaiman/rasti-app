@@ -17,49 +17,32 @@ module Rasti
 
     class << self
 
-      def permissions
-        @permissions ||= []
-      end
+      extend Forwardable
 
-      def valid_permission?(permission)
-        permission = Permission.new permission
-        permissions.any? { |p| permission.include? p }
-      end
+      def_delegators :facade, :interactions,
+                              :synchronic_interactions,
+                              :asynchronic_interactions,
+                              :permissions, 
+                              :valid_permission?
 
-      def classes_in(namespace, superclass=nil)
-        [].tap do |classes|
-          namespace.constants.each do |name|
-            constant = namespace.const_get name
-            if constant.class == Module
-              classes_in(constant, superclass).each { |c| classes << c }
-            elsif constant.class == Class && (superclass.nil? || constant.ancestors.include?(superclass))
-              classes << constant
-            end
-          end
-        end
-      end
+      attr_reader :facade
 
       private
 
-      def facade(namespace)
-        classes_in(namespace, Interaction).each do |interaction|
-          permission = interaction_permission interaction, namespace
-          permissions << permission
+      def expose(namespace)
+        @facade = Facade.new namespace
 
-          if !interaction.ancestors.include?(AsynchronicInteraction)
-            define_method permission.last_section do |params={}|
-              call interaction, permission, params
+        facade.interactions.each do |name, specificaiton|
+          if specificaiton.synchronic?
+            define_method name do |params={}|
+              call name, specificaiton.permission, params
             end
           end
-          
-          define_method "enqueue_#{permission.last_section}" do |params={}|
-            enqueue interaction, permission, params
+
+          define_method "enqueue_#{name}" do |params={}|
+            enqueue name, specificaiton.permission, params
           end
         end
-      end
-
-      def interaction_permission(interaction, namespace)
-        Permission.new interaction.name.sub("#{namespace.name}::", '').split('::').map { |s| Inflecto.underscore s }
       end
 
     end
@@ -77,19 +60,14 @@ module Rasti
       @policy ||= (container[:policy_class] || Policy).new container, context
     end
 
-    def call(interaction, permission, params)
+    def call(name, permission, params)
       authorize! permission, params
-      interaction.new(container, context).call(params)
+      self.class.facade.call name, container, context, params
     end
 
-    def enqueue(interaction, permission, params)
+    def enqueue(name, permission, params)
       authorize! permission, params
-
-      Job.enqueue queue:       params.delete(:queue) || Asynchronic.default_queue,
-                  alias:       interaction,
-                  interaction: interaction,
-                  context:     context,
-                  params:      interaction.build_form(params).attributes
+      self.class.facade.enqueue name, context, params
     end
 
     def authorize!(permission, params)
