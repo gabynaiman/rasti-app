@@ -31,7 +31,7 @@ module Rasti
         @context = context
       end
 
-      def authorized?(permission, params)
+      def authorized?(permission, params={})
         if self.class.authorizations.key? permission
           self.class.authorizations[permission].call params
         else
@@ -39,7 +39,7 @@ module Rasti
         end
       end
 
-      def authorize!(permission, params)
+      def authorize!(permission, params={})
         raise UnauthorizedError.new(user.name, permission) unless authorized? permission, params
       end
 
