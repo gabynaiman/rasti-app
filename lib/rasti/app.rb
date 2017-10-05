@@ -32,15 +32,15 @@ module Rasti
       def expose(namespace)
         @facade = Facade.new namespace
 
-        facade.interactions.each do |name, specificaiton|
-          if specificaiton.synchronic?
+        facade.interactions.each do |name, specification|
+          if specification.synchronic?
             define_method name do |params={}|
-              call name, specificaiton.permission, params
+              call name, specification.permission, params
             end
           end
 
           define_method "enqueue_#{name}" do |params={}|
-            enqueue name, specificaiton.permission, params
+            enqueue name, specification.permission, params
           end
         end
       end
@@ -60,12 +60,12 @@ module Rasti
       @policy ||= (container[:policy_class] || Policy).new container, context
     end
 
-    def call(name, permission, params)
+    def call(name, permission, params={})
       authorize! permission, params
       self.class.facade.call name, container, context, params
     end
 
-    def enqueue(name, permission, params)
+    def enqueue(name, permission, params={})
       authorize! permission, params
       self.class.facade.enqueue name, context, params
     end

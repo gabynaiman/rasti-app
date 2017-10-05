@@ -11,11 +11,19 @@ module Rasti
 
       class InteractionSpecification
 
-        attr_reader :interaction, :permission
+        attr_reader :interaction, :namespace
 
-        def initialize(options)
-          @interaction = options.fetch(:interaction)
-          @permission = options.fetch(:permission)
+        def initialize(interaction, namespace)
+          @interaction = interaction
+          @namespace = namespace
+        end
+
+        def name
+          permission.last_section.to_sym
+        end
+
+        def permission
+          @permission ||= Permission.new interaction.name.sub("#{namespace.name}::", '').split('::').map { |s| Inflecto.underscore s }
         end
 
         def asynchronic?
@@ -29,13 +37,37 @@ module Rasti
       end
 
 
+      class SynchronicInteractionsFactory
+
+        include Delegable
+
+        def initialize(facade, container, context)
+          @facade = facade
+          @container = container
+          @context = context
+        end
+
+        private
+
+        attr_reader :facade, :container, :context
+
+        def delegated_methods
+          facade.synchronic_interactions.keys
+        end
+
+        def call_delegated_method(method_name, *args, &block)
+          facade.call method_name, container, context, *args
+        end
+
+      end
+
+
       attr_reader :interactions
 
       def initialize(namespace)
         @interactions = Utils.classes_in(namespace, Interaction).each_with_object({}) do |interaction, hash|
-          permission = build_permission interaction, namespace
-          hash[permission.last_section.to_sym] = InteractionSpecification.new interaction: interaction,
-                                                                              permission: permission
+          specificaiton = InteractionSpecification.new interaction, namespace
+          hash[specificaiton.name] = specificaiton
         end
       end
 
@@ -70,33 +102,8 @@ module Rasti
         permissions.any? { |p| permission.include? p }
       end
 
-      def synchronic_interactions_factory
-        if !self.class.const_defined? :SynchronicInteractionsFactory
-          facade = self
-
-          klass = Class.new do
-
-            def initialize(container, context)
-              @container = container
-              @context = context
-            end
-
-            facade.synchronic_interactions.each do |name, specification|
-              define_method name do |params={}|
-                facade.call name, container, context, params
-              end
-            end
-
-            private
-
-            attr_reader :container, :context
-
-          end
-
-          self.class.const_set :SynchronicInteractionsFactory, klass
-        end
-
-        SynchronicInteractionsFactory
+      def synchronic_interactions_factory(container, context)
+        SynchronicInteractionsFactory.new self, container, context
       end
 
       private
@@ -104,10 +111,6 @@ module Rasti
       def interaction_class(name)
         raise UndefinedInteraction, name unless interactions.key?(name.to_sym)
         interactions[name.to_sym].interaction
-      end
-
-      def build_permission(interaction, namespace)
-        Permission.new interaction.name.sub("#{namespace.name}::", '').split('::').map { |s| Inflecto.underscore s }
       end
 
     end
