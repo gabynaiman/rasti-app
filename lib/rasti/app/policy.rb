@@ -3,9 +3,18 @@ module Rasti
     class Policy
 
       class UnauthorizedError < StandardError
+
+        attr_reader :user, :permission
+
         def initialize(user, permission)
-          super "Access denied [#{user} -> #{permission}]"
+          @user = user
+          @permission = permission
         end
+
+        def message
+          "Permission denied [#{user} -> #{permission}]"
+        end
+        
       end
       
       class << self
