@@ -42,7 +42,7 @@ module Rasti
 
       def authorized?(permission, params={})
         if self.class.authorizations.key? permission
-          self.class.authorizations[permission].call params
+          instance_exec params, &self.class.authorizations[permission]
         else
           user.authorized? permission
         end
