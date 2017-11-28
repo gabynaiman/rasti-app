@@ -55,8 +55,9 @@ module Rasti
           facade.synchronic_interactions.keys
         end
 
-        def call_delegated_method(method_name, *args, &block)
-          facade.call method_name, container, context, *args
+        def call_delegated_method(interaction_name, params={})
+          form = facade.build_form interaction_name, params
+          facade.call interaction_name, container, context, form
         end
 
       end
@@ -71,18 +72,22 @@ module Rasti
         end
       end
 
-      def call(name, container, context, params={})
-        interaction_class(name).new(container, context).call(params)
+      def build_form(name, params={})
+        interaction_class(name).build_form params
       end
 
-      def enqueue(name, context, params={})
+      def call(name, container, context, form)
+        interaction_class(name).new(container, context).call(form)
+      end
+
+      def enqueue(name, context, form)
         interaction = interaction_class name
         
         Job.enqueue queue:       params.delete(:queue) || Asynchronic.default_queue,
                     alias:       interaction,
                     interaction: interaction,
                     context:     context,
-                    params:      interaction.build_form(params).attributes
+                    params:      form.attributes
       end
 
       def synchronic_interactions

@@ -61,17 +61,19 @@ module Rasti
     end
 
     def call(name, permission, params={})
-      authorize! permission, params
-      self.class.facade.call name, container, context, params
+      form = self.class.facade.build_form name, params
+      authorize! permission, form
+      self.class.facade.call name, container, context, form
     end
 
     def enqueue(name, permission, params={})
-      authorize! permission, params
-      self.class.facade.enqueue name, context, params
+      form = self.class.facade.build_form name, params
+      authorize! permission, form
+      self.class.facade.enqueue name, context, form
     end
 
-    def authorize!(permission, params)
-      policy.authorize! permission, params
+    def authorize!(permission, form)
+      policy.authorize! permission, form
     end
 
   end

@@ -40,16 +40,16 @@ module Rasti
         @context = context
       end
 
-      def authorized?(permission, params={})
+      def authorized?(permission, form)
         if self.class.authorizations.key? permission
-          instance_exec params, &self.class.authorizations[permission]
+          instance_exec form, &self.class.authorizations[permission]
         else
           user.authorized? permission
         end
       end
 
-      def authorize!(permission, params={})
-        raise UnauthorizedError.new(user.name, permission) unless authorized? permission, params
+      def authorize!(permission, form)
+        raise UnauthorizedError.new(user.name, permission) unless authorized? permission, form
       end
 
       private 

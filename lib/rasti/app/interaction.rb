@@ -17,8 +17,8 @@ module Rasti
         @context = context
       end
 
-      def call(params)
-        thread_cache[:form] = self.class.build_form(params)
+      def call(form)
+        thread_cache[:form] = form
         validate!
         execute
       ensure
