@@ -13,10 +13,10 @@ module Rasti
       end
 
       def enqueue(interaction, form)
-        job.send :async, Job, queue:        params.delete(:queue) || Asynchronic.default_queue,
-                              alias:        params.delete(:alias) || interaction,
-                              dependency:   params.delete(:dependency),
-                              dependencies: params.delete(:dependencies),
+        job.send :async, Job, queue:        params[:queue] || Asynchronic.default_queue,
+                              alias:        params[:alias] || interaction,
+                              dependency:   params[:dependency],
+                              dependencies: params[:dependencies],
                               interaction:  interaction,
                               context:      context,
                               params:       form.attributes
