@@ -12,14 +12,14 @@ module Rasti
         @job ||= Asynchronic[context.fetch(:job_id)].job
       end
 
-      def enqueue(interaction, form)
-        job.send :async, Job, queue:        params[:queue] || Asynchronic.default_queue,
-                              alias:        params[:alias] || interaction,
-                              dependency:   params[:dependency],
-                              dependencies: params[:dependencies],
+      def enqueue(interaction, params)
+        job.send :async, Job, queue:        params.delete(:queue) || Asynchronic.default_queue,
+                              alias:        params.delete(:alias) || interaction,
+                              dependency:   params.delete(:dependency),
+                              dependencies: params.delete(:dependencies),
                               interaction:  interaction,
                               context:      context,
-                              params:       form.attributes
+                              params:       params
       end
 
       def result_of(reference)

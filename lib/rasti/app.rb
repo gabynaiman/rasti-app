@@ -67,16 +67,11 @@ module Rasti
     end
 
     def enqueue(name, permission, params={})
-      async_params = {
-        queue:        params.delete(:queue),
-        alias:        params.delete(:alias),
-        dependency:   params.delete(:dependency),
-        dependencies: params.delete(:dependencies)
-      }
-
+      queue = params.delete(:queue)
+      
       form = self.class.facade.build_form name, params
       authorize! permission, form
-      self.class.facade.enqueue name, context, form, async_params
+      self.class.facade.enqueue name, context, form, queue
     end
 
     def authorize!(permission, form)

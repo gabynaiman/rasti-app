@@ -80,12 +80,10 @@ module Rasti
         interaction_class(name).new(container, context).call(form)
       end
 
-      def enqueue(name, context, form, params)
+      def enqueue(name, context, form, queue=nil)
         interaction = interaction_class name
-        Job.enqueue queue:        params[:queue] || Asynchronic.default_queue,
-                    alias:        params[:alias] || interaction,
-                    dependency:   params[:dependency],
-                    dependencies: params[:dependencies],
+        Job.enqueue queue:        queue || Asynchronic.default_queue,
+                    alias:        interaction,
                     interaction:  interaction,
                     context:      context,
                     params:       form.attributes
