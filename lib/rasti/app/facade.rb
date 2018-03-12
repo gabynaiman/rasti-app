@@ -34,6 +34,10 @@ module Rasti
           !asynchronic?
         end
 
+        def form_attributes
+          interaction.const_defined?(:Form) ? interaction.const_get(:Form).attributes : {}
+        end
+
       end
 
 
