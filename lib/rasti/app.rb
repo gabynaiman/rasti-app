@@ -70,11 +70,14 @@ module Rasti
     end
 
     def enqueue(name, permission, params={})
-      queue = params.delete(:queue)
+      options = {
+        queue: params.delete(:queue),
+        job_id: params.delete(:job_id)
+      }
       
       form = self.class.facade.build_form name, params
       authorize! permission, form
-      result = self.class.facade.enqueue name, context, form, queue
+      result = self.class.facade.enqueue name, context, form, options
       after_call name, form.attributes
 
       result
