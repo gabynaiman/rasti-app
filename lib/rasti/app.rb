@@ -47,23 +47,23 @@ module Rasti
 
     end
 
-    def initialize(container, context={})
-      @container = container
-      @context = context
+    def initialize(environment, session)
+      @environment = environment
+      @session = session
     end
 
     private
 
-    attr_reader :container, :context
+    attr_reader :environment, :session
 
     def policy
-      @policy ||= (container[:policy_class] || Policy).new container, context
+      @policy ||= environment.policy_for session
     end
 
     def call(name, permission, params={})
       form = self.class.facade.build_form name, params
       authorize! permission, form
-      result = self.class.facade.call name, container, context, form
+      result = self.class.facade.call name, environment, session, form
       after_call name, form.attributes
 
       result
@@ -77,7 +77,7 @@ module Rasti
       
       form = self.class.facade.build_form name, params
       authorize! permission, form
-      result = self.class.facade.enqueue name, context, form, options
+      result = self.class.facade.enqueue name, session, form, options
       after_call name, form.attributes
 
       result

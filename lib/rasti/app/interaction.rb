@@ -12,9 +12,9 @@ module Rasti
         false
       end      
 
-      def initialize(container, context)
-        @container = container
-        @context = context
+      def initialize(environment, session)
+        @environment = environment
+        @session = session
       end
 
       def call(form)
@@ -27,7 +27,7 @@ module Rasti
 
       private
 
-      attr_reader :container, :context
+      attr_reader :environment, :session
 
       def form
         thread_cache[:form]

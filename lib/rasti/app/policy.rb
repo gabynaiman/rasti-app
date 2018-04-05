@@ -35,30 +35,26 @@ module Rasti
 
       end
 
-      def initialize(container, context)
-        @container = container
-        @context = context
+      def initialize(environment, session)
+        @environment = environment
+        @session = session
       end
 
       def authorized?(permission, form)
         if self.class.authorizations.key? permission
           instance_exec form, &self.class.authorizations[permission]
         else
-          user.authorized? permission
+          session.user.authorized? permission
         end
       end
 
       def authorize!(permission, form)
-        raise UnauthorizedError.new(user.name, permission) unless authorized? permission, form
+        raise UnauthorizedError.new(session.user.name, permission) unless authorized? permission, form
       end
 
       private 
 
-      attr_reader :container, :context
-
-      def user
-        context.fetch(:user)
-      end
+      attr_reader :environment, :session
 
     end
   end

@@ -45,15 +45,15 @@ module Rasti
 
         include Delegable
 
-        def initialize(facade, container, context)
+        def initialize(facade, environment, session)
           @facade = facade
-          @container = container
-          @context = context
+          @environment = environment
+          @session = session
         end
 
         private
 
-        attr_reader :facade, :container, :context
+        attr_reader :facade, :environment, :session
 
         def delegated_methods
           facade.synchronic_interactions.keys
@@ -61,7 +61,7 @@ module Rasti
 
         def call_delegated_method(interaction_name, params={})
           form = facade.build_form interaction_name, params
-          facade.call interaction_name, container, context, form
+          facade.call interaction_name, environment, session, form
         end
 
       end
@@ -80,17 +80,17 @@ module Rasti
         interaction_class(name).build_form params
       end
 
-      def call(name, container, context, form)
-        interaction_class(name).new(container, context).call(form)
+      def call(name, environment, session, form)
+        interaction_class(name).new(environment, session).call(form)
       end
 
-      def enqueue(name, context, form, options={})
+      def enqueue(name, session, form, options={})
         interaction = interaction_class name
         Job.enqueue queue:        options[:queue] || Asynchronic.default_queue,
                     id:           options[:job_id],
                     alias:        interaction,
                     interaction:  interaction,
-                    context:      context,
+                    session:      session,
                     params:       form.attributes
       end
 
@@ -111,8 +111,8 @@ module Rasti
         permissions.any? { |p| permission.include? p }
       end
 
-      def synchronic_interactions_factory(container, context)
-        SynchronicInteractionsFactory.new self, container, context
+      def synchronic_interactions_factory(environment, session)
+        SynchronicInteractionsFactory.new self, environment, session
       end
 
       private

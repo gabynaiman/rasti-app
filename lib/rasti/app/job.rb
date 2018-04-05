@@ -4,13 +4,13 @@ module Rasti
 
       extend ClassConfig
 
-      attr_config :container
+      attr_config :environment
 
       def call
-        raise "Undefined #{self.class.name}.container" unless self.class.container
+        raise "Undefined #{self.class.name}.environment" unless self.class.environment
         
-        context = params[:context].merge(job_id: @process.id)
-        interaction = params[:interaction].new self.class.container, context
+        session.job_id = @process.id
+        interaction = params[:interaction].new self.class.environment, session
         interaction.call params[:interaction].build_form params[:params]
       end
 
