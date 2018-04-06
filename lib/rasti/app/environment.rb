@@ -15,7 +15,12 @@ module Rasti
       private
 
       def policy_class
-        @policy_class ||= Consty.get 'Policy' rescue Policy
+        @policy_class ||= begin
+          namespace = Utils.namespace_of self.class
+          namespace.nil? ? Consty.get('Policy') : Consty.get('Policy', namespace)
+        rescue 
+          Policy
+        end
       end
 
     end

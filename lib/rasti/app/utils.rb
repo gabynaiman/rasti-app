@@ -16,6 +16,11 @@ module Rasti
           end
         end
 
+        def namespace_of(klass)
+          namespace = klass.name.split('::')[0..-2].join('::')
+          namespace.empty? ? nil : Object.const_get(namespace)
+        end
+
       end
     end
   end
