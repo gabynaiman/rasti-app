@@ -64,7 +64,7 @@ module Rasti
       form = self.class.facade.build_form name, params
       authorize! permission, form
       result = self.class.facade.call name, environment, session, form
-      after_call name, form.attributes
+      after_call name, form.attributes, result
 
       result
     end
@@ -78,7 +78,7 @@ module Rasti
       form = self.class.facade.build_form name, params
       authorize! permission, form
       result = self.class.facade.enqueue name, session, form, options
-      after_call name, form.attributes
+      after_call name, form.attributes, result
 
       result
     end
@@ -87,7 +87,7 @@ module Rasti
       policy.authorize! permission, form
     end
 
-    def after_call(name, params)
+    def after_call(name, params, result)
     end
 
   end
