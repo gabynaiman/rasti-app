@@ -4,7 +4,7 @@ module Rasti
 
       class DefaultWrapper
 
-        def call(environment, session, params)
+        def self.call(environment, session, params)
           yield
         end
 
