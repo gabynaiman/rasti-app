@@ -88,6 +88,7 @@ module Rasti
         interaction = interaction_class name
         Job.enqueue queue:        options[:queue] || Asynchronic.default_queue,
                     id:           options[:job_id],
+                    wrapper:      options[:job_wrapper],
                     alias:        interaction,
                     interaction:  interaction,
                     session:      session,
