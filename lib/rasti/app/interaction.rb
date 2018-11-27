@@ -15,6 +15,7 @@ module Rasti
       def initialize(environment, session)
         @environment = environment
         @session = session
+        @uuid = SecureRandom.uuid
       end
 
       def call(form)
@@ -27,7 +28,7 @@ module Rasti
 
       private
 
-      attr_reader :environment, :session
+      attr_reader :environment, :session, :uuid
 
       def form
         thread_cache[:form]
@@ -38,7 +39,7 @@ module Rasti
       end
 
       def thread_cache_key
-        "#{self.class.name}[#{self.object_id}]"
+        "#{self.class.name}[#{uuid}]"
       end
 
     end
