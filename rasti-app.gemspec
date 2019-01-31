@@ -19,7 +19,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ['lib']
 
   spec.add_runtime_dependency 'inflecto', '~> 0.0'
-  spec.add_runtime_dependency 'asynchronic', '~> 1.5', '>= 1.5.2'
+  spec.add_runtime_dependency 'asynchronic', '~> 1.6', '>= 1.6.2'
   spec.add_runtime_dependency 'multi_require', '~> 1.0'
   spec.add_runtime_dependency 'hash_ext', '~> 0.2', '>= 0.2.1'
   spec.add_runtime_dependency 'consty', '~> 1.0'
