@@ -10,7 +10,7 @@ module Rasti
           define_method name do
             cache[name] ||= begin
               adapter_class = Consty.get(settings[name][:adapter], self.class.services[name])
-              self.class.services[name].new adapter_class.new(settings[name][:options])
+              self.class.services[name].new adapter_class.new(environment, settings[name][:options])
             end
           end
         end
@@ -21,14 +21,15 @@ module Rasti
 
       end
 
-      def initialize(settings)
+      def initialize(environment, settings)
+        @environment = environment
         @settings = settings
         @cache = {}
       end
 
       private
 
-      attr_reader :settings, :cache
+      attr_reader :environment, :settings, :cache
       
     end
   end
