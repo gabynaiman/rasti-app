@@ -1,5 +1,5 @@
 module Rasti
   class App
-    VERSION = '2.2.4'
+    VERSION = '3.0.0'
   end
 end
