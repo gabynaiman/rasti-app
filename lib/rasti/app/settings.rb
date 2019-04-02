@@ -8,7 +8,7 @@ module Rasti
         end
 
         def load_file(filename)
-          Hash::Accessible.new evaluate(File.read(filename))
+          Hash::Accessible.new(evaluate(File.read(filename))).deep_freeze
         end
 
         private
