@@ -13,6 +13,8 @@ module Rasti
         options.fetch(:user)
       end
 
+      alias_method :to_s, :inspect
+
       private
 
       attr_reader :options
