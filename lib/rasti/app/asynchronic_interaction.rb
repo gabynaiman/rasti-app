@@ -9,7 +9,7 @@ module Rasti
       private
 
       def job
-        @job ||= Asynchronic[context.fetch(:job_id)].job
+        @job ||= Asynchronic[session.job_id].job
       end
 
       def enqueue(interaction, params)
@@ -18,7 +18,7 @@ module Rasti
                               dependency:   params.delete(:dependency),
                               dependencies: params.delete(:dependencies),
                               interaction:  interaction,
-                              context:      context,
+                              session:      session,
                               params:       params
       end
 
