@@ -9,6 +9,7 @@ module Rasti
 
           define_method name do
             cache[name] ||= begin
+              raise "Undefined settings for service: #{name}" unless settings.key? name
               adapter_class = Consty.get(settings[name][:adapter], self.class.services[name])
               self.class.services[name].new adapter_class.new(environment, settings[name][:options])
             end
