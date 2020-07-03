@@ -13,13 +13,15 @@ module Rasti
       end
 
       def enqueue(interaction, params)
-        job.send :async, Job, queue:        params.delete(:queue) || Asynchronic.default_queue,
-                              alias:        params.delete(:alias) || interaction,
-                              dependency:   params.delete(:dependency),
-                              dependencies: params.delete(:dependencies),
+        options, attributes = Utils.split_hash params, [:queue, :alias, :dependency, :dependencies]
+
+        job.send :async, Job, queue:        options[:queue] || Asynchronic.default_queue,
+                              alias:        options[:alias] || interaction,
+                              dependency:   options[:dependency],
+                              dependencies: options[:dependencies],
                               interaction:  interaction,
                               session:      session,
-                              params:       params
+                              params:       attributes
       end
 
       def result_of(reference)

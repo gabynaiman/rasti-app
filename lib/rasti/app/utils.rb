@@ -21,6 +21,10 @@ module Rasti
           namespace.empty? ? nil : Object.const_get(namespace)
         end
 
+        def split_hash(hash, keys)
+          [hash.slice(*keys), hash.slice(*(hash.keys - keys))]
+        end
+
       end
     end
   end
