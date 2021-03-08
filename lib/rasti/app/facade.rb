@@ -35,7 +35,7 @@ module Rasti
         end
 
         def form_attributes
-          interaction.const_defined?(:Form) ? interaction.const_get(:Form).attributes : {}
+          interaction.const_defined?(:Form) ? interaction.const_get(:Form).attributes : []
         end
 
       end
@@ -92,7 +92,7 @@ module Rasti
                     alias:        interaction,
                     interaction:  interaction,
                     session:      session,
-                    params:       form.attributes
+                    params:       form.to_h
       end
 
       def synchronic_interactions

@@ -22,7 +22,7 @@ module Rasti
       def_delegators :facade, :interactions,
                               :synchronic_interactions,
                               :asynchronic_interactions,
-                              :permissions, 
+                              :permissions,
                               :valid_permission?
 
       attr_reader :facade
@@ -64,18 +64,18 @@ module Rasti
       form = self.class.facade.build_form name, params
       authorize! permission, form
       result = self.class.facade.call name, environment, session, form
-      after_call name, form.attributes, result
+      after_call name, form.to_h, result
 
       result
     end
 
     def enqueue(name, permission, params={})
       options, attributes = Utils.split_hash params, [:queue, :job_id, :job_wrapper]
-      
+
       form = self.class.facade.build_form name, attributes
       authorize! permission, form
       result = self.class.facade.enqueue name, session, form, options
-      after_call name, form.attributes, result
+      after_call name, form.to_h, result
 
       result
     end
